@@ -17,7 +17,7 @@ plugin to `/usr/local/lib/suricata/plugins`.
 
 ```
 mkdir -p /usr/local/lib/suricata/plugins
-cp target/release/librkafka_output.so /usr/local/lib/suricata/plugins/
+cp target/release/libkafka_output.so /usr/local/lib/suricata/plugins/
 ```
 
 Add a section to your `suricata.yaml` that looks like:
