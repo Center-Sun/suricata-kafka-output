@@ -1,0 +1,13 @@
+[package]
+authors = ["1z3r0"]
+edition = "2018"
+name = "suricata-kafka-output"
+version = "0.0.1"
+
+[lib]
+crate-type = ["cdylib"]
+name = "kafka_output"
+
+[dependencies]
+rdkafka = "0.25"
+suricata = {version = "6.0.3-alpha", package = "suricata"}
