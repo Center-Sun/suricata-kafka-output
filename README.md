@@ -38,5 +38,6 @@ Add a section to your `suricata.yaml` that looks like:
 kafka:
   brokers: "kafka1:9092,kafka2:9092"
   topic: suricata
+  client-id: suricata_client_01
   buffer-size: 1024
 ```
