@@ -35,11 +35,13 @@ use suricata::{SCLogError, SCLogNotice};
 
 
 const DEFAULT_BUFFER_SIZE: &str = "65535";
+const DEFAULT_CLIENT_ID: &str = "rdkafka";
 
 #[derive(Debug, Clone)]
 struct ProducerConfig {
     brokers: String,
     topic: String,
+    client_id: String,
     buffer: usize,
 }
 
@@ -58,6 +60,7 @@ impl ProducerConfig {
             SCLogError!("topic parameter required!");
             panic!();
         };
+        let client_id = conf.get_child_value("client-id").unwrap_or(DEFAULT_CLIENT_ID);
         let buffer_size = match conf
             .get_child_value("buffer-size")
             .unwrap_or(DEFAULT_BUFFER_SIZE)
@@ -72,6 +75,7 @@ impl ProducerConfig {
         let config = ProducerConfig {
             brokers: brokers.into(),
             topic: topic.into(),
+            client_id: client_id.into(),
             buffer: buffer_size,
         };
         Ok(config)
@@ -95,6 +99,7 @@ impl KafkaProducer {
     ) -> Result<Self,KafkaError> {
         let producer: FutureProducer = ClientConfig::new()
             .set("bootstrap.servers", &config.brokers)
+            .set("client.id",&config.client_id)
             .set("message.timeout.ms", "5000")
             .create()?;
         Ok(Self {
@@ -152,9 +157,10 @@ unsafe extern "C" fn output_open(conf: *const c_void, init_data: *mut *mut c_voi
     let mut kafka_producer = match KafkaProducer::new(config, rx) {
         Ok(producer) => {
             SCLogNotice!(
-                "KafKa Producer initialize success with brokers:{:?} and topic: {:?} and buffer-size: {:?}", 
+                "KafKa Producer initialize success with brokers:{:?} | topic: {:?} | client_id: {:?} | buffer-size: {:?}", 
                 producer.config.brokers,
                 producer.config.topic,
+                producer.config.client_id,
                 producer.config.buffer
             );
             producer
